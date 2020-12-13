@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import axios from "axios";
 import {axiosWithAuth} from "../utils/axiosWithAuth";
 
 const initialColor = {
@@ -24,23 +23,27 @@ const ColorList = ({ colors, updateColors }) => {
     // where is is saved right now?
     
     axiosWithAuth()
-      .put(`/api/colors/${colorToEdit.id}`, colorToEdit)
-      .then(res => {
-          //console.log(res.data)
-          setEditing(false)
-      })
-      .catch(err => console.log('error updating', err.respose))
+    .put(`http://localhost:5000/api/colors/${colorToEdit.id}`, colorToEdit)
+    .then(res => {
+      setEditing(false);
+      updateColors(
+        colors.map(color => {
+          return color.id === colorToEdit.id ? res.data : color;
+        })
+      )
+    })
+    .catch(err => console.log(err));
+  console.log(colorToEdit)
   };
 
   const deleteColor = color => {
     // make a delete request to delete this color
     axiosWithAuth()
-    .delete(`/api/colors/${colorToEdit.id}`, colorToEdit)
+    .delete(`http://localhost:5000/api/colors/${color.id}`)
     .then(res => {
-        updateColors(colors.filter(item=> item.id !== color.id))
-        setEditing(false)
+      updateColors(colors.filter(color => color.id !== res.data))
     })
-    .catch(err => console.log(err.response))
+    .catch(err => console.log(err))
   };
 
   return (
@@ -50,12 +53,12 @@ const ColorList = ({ colors, updateColors }) => {
         {colors.map(color => (
           <li key={color.color} onClick={() => editColor(color)}>
             <span>
-              <span className="delete" onClick={e => {
-                    e.stopPropagation();
-                    deleteColor(color)
-                  }
-                }>
-                  x
+            <span className="delete" data-testid="colors" onClick={e => {
+                e.stopPropagation();
+                deleteColor(color)
+              }
+              }>
+                x
               </span>{" "}
               {color.color}
             </span>

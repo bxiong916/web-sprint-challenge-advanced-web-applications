@@ -1,62 +1,54 @@
 import React, { useState } from "react";
-import {axiosWithAuth} from '../utils/axiosWithAuth'
+import { axiosWithAuth } from "../utils/axiosWithAuth"
 
- // make a post request to retrieve a token from the api
-  // when you have handled the token, navigate to the BubblePage route
-
-
-
-
-
-const Login = (props) => {
- const [login, setLogin] = useState({
-   username: "",
-   password: "",
-
- })
-
- const handleSubmit = (e) => {
-   e.preventDefault()
-  axiosWithAuth()
-  .post('./api/login', login)
-  .then(res => {
-    console.log(res)
-    localStorage.setItem('token', res.data.payload)
-    props.history.push('/colors')
-  })
-  .catch(err => console.log('error axiosWithAuth', err))
- }
+const Login = props => {
+  const [credentials, setCredentials] = useState({
+    username: "",
+    password: ""
+  });
 
   const handleChange = e => {
-    setLogin({...login, [e.target.name]: e.target.value})
+    setCredentials({
+      ...credentials,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const login = e => {
+    e.preventDefault();
+    axiosWithAuth()
+      .post("/login", credentials)
+      .then(res => {
+        localStorage.setItem("token", res.data.payload);
+        props.history.push("/bubblepage")
+      })
   }
 
 
 
+
+
+
+  // make a post request to retrieve a token from the api
+  // when you have handled the token, navigate to the BubblePage route
   return (
     <>
-      <h1>Welcome to the Bubble App!</h1>
+    
+      <h1>Welcome To The Greatest Bubble App There Ever Was!</h1>
 
-      <form className='' onSubmit={handleSubmit}>
+      <form onSubmit={login}>
         <input
-          type='text'
-          name='username'
-          placeholder="Username"
-          value={props.username}
-          onChange={handleChange}
-          className=''
-        />
+          type="text"
+          name="username"
+          value={credentials.username}
+          onChange={handleChange} />
         <input
-          type='password'
-          name='password'
-          placeholder="Password"
-          value={props.password}
-          onChange={handleChange}
-          className=''
-        />
-      <button>Login!</button>
+          type="password"
+          name="password"
+          value={credentials.password}
+          onChange={handleChange} />
+        <button>Login</button>
       </form>
-
     </>
   );
 };
